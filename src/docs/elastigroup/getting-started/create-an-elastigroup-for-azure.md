@@ -4,14 +4,19 @@ This procedure describes how to create an Elastigroup from scratch in Azure.
 
 ## Prerequisite
 
-Before you can start, you must [connect your Azure account to Spot](connect-your-cloud-provider/azure-account).
+Before you start, [connect your Azure account to Spot](connect-your-cloud-provider/azure-account).
 
 ## Get Started
 
-1. In the Spot Console under Elastigroup, click Groups.
-2. Click Create Elastigroup.
+1. In the Spot Console, go to **Elastigroup** > **Groups**.
+2. Click **Create** > **Start From Scratch**.
 
-<img src="/elastigroup/_media/gettingstarted-eg-azure-01.png" />
+   <details>
+     <summary markdown="span">View image</summary>
+
+     <img src="https://github.com/user-attachments/assets/d945cc86-7bdb-47d7-993d-96529f7029f5"/>
+
+   </details>
 
 These are the steps in the Creation Wizard:
 
@@ -22,84 +27,73 @@ These are the steps in the Creation Wizard:
 
 ## Step 1: General
 
-Enter the information described below. Required fields are indicated with an asterisk (\*).
-
 ### Basic Settings
 
-- Elastigroup Name. Enter a name for the Elastigroup. We recommend using a naming convention based on the specific workload the Elastigroup will manage, for example dev-eu1-worker.
-- Description: Add a few words indicating the purpose of this Elastigroup.
-
-<img src="/elastigroup/_media/gettingstarted-eg-azure-02.png" />
+- Elastigroup Name. can use a naming convention based on the specific workload the Elastigroup will manage, for example, <i>dev-eu1-worker</i>.
+- Description.
 
 ### Capacity Settings
 
-- Target. The number of low priority VMs in your Elastigroup.
-- Minimum. In the case of a scale down policy action, this is the minimum number of low priority VMs that must run in the group. The minimum acceptable value is 0.
-- Maximum. In the case of a scale up policy action, this is the maximum number of low priority VMs allowed in the group. The minimum acceptable value is 0.
+- **Target** is the number of low priority VMs in your Elastigroup.
+- **Minimum** is the minimum number of low priority VMs that must run in the group for a scale-down policy action. The minimum value is <i>0</i>.
+- **Maximum** is the maximum number of low priority VMs allowed in the group for a scal-up policy action. The minimum value is <i>0</i>.
 
-Choose one of the following:
+Choose one of these:
 
-- On-Demand Count. The number of on-demand VMs to include in the Elastigroup.
-- % Spot-VMs. The percentage of low priority VMs to include in the Elastigroup. Use the slider to set the percent. The remaining percentage will be on-demand instances.
+- **On-Demand Count** is the number of on-demand VMs to include in the Elastigroup.
+- **Spot-VMs %** is the percentage of low priority VMs to include in the Elastigroup. The rest will be on-demand instances.
 
 ### Availability Settings
 
-- Draining Timeout. Set the amount of time (seconds) that Elastigroup will allow to de-register and drain VMs before termination.
-- Cluster Orientation. Specify the prediction algorithm strategy. You can choose for the following:
-  - Availability. VM selection will be performed to ensure the best market availability within your Elastigroup.
-  - Cost. VM types will be prioritized by their costs so the selection is based on this list using availability considerations.
-  - Cheapest. VM selection will be performed by launching the cheapest instances at any time.
-- Fallback to On-Demand. Elastigroup provides a fallback mechanism in case no spot VMs are available. Mark this option if you would like the option to automatically fall back to an on-demand VM in such a case.
-- Continuous Optimization. Choose when Elastigroup may move workloads from on-demand to spot VMs. You may choose from:
-  - Once Available. Elastigroup moves the workloads when your spot VM types become available.
-  - Custom. Define one or more time windows in which you allow the move.
-
-<img src="/elastigroup/_media/gettingstarted-eg-azure-02b.png" />
-
-When you have completed the information in the General tab, click Next to continue.
+- **Draining Timeout** is the time in seconds that Elastigroup will allow to deregister and drain VMs before termination.
+- **Cluster Orientation** is the prediction algorithm strategy:
+  - **Availability**: VM selection ensures the best market availability within your Elastigroup.
+  - **Cost**: VM types are prioritized by cost and market.
+- **Fallback to On-Demand** lets Elastigroup automatically fall back to an on-demand VM if no spot VMs are available.
+- **Continuous Optimization** lets Elastigroup move workloads from on demand to spot VMs:
+  - **Once Available**: Elastigroup moves the workloads when your spot VM types become available.
+  - **Custom**: define when to allow the move.
 
 ## Step 2: Compute
 
 ### Operating System and VM Sizes
 
-- Resource Group. Choose a resource group.
-- Operating System. Choose the OS that will run on your VMs.
-- Region. Choose the Azure region the VMS will run in.
-- Availability Zones. Choose one or more availability zones where your VMs will be allowed to run. It is highly recommended to choose multiple availability zones to further diversify the spot markets available to the Elastigroup.
-- On-Demand VM-Sizes. Choose the regular priority VMs sizes within the Elastigroup. These are used in the event that no Low-Priority VMs are available in the sizes requested. Ensure the selected VMs are available in the desired region.
-- Spot-VM Sizes. Select the low priority VM sizes to be available for the Elastigroup. Ensure the selected VM size is available in the desired Region.
+- **Resource Group**.
+- **Operating System** to run on your VMs.
+- **Region** the VMS will run in.
+- **Availability Zones** where your VMs are allowed to run. You can select multiple availability zones to diversify the spot markets available to the Elastigroup.
+- **On-Demand VM-Sizes** lets you select the regular priority VMs sizes within the Elastigroup. They are used if no low-priority VMs are available in the sizes requested. Make sure the VMs are available in the relevant region.
+- **Spot-VM Sizes** are the low-priority VM sizes that need to be available for the Elastigroup. Make sure the VM sizes are available in the relevant region.
 
 > **Tip**: To maximize cost savings, provide the Elastigroup with all possible low-priority VM sizes compatible with the expected workload. The more VM sizes, the better the odds Elastigroup will find an available low-priority VM to run on.
 
-<img src="/elastigroup/_media/gettingstarted-eg-azure-02a.png" />
-
 ### Image
 
-Choose one of the following types of images:
+Choose a type of images:
 
-- [Marketplace](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage). An image available in the Azure Marketplace. You will need to select options from each of the following dropdowns:
-  - Publisher. The organization that created the image.
-  - Offer. The name of a group of related images created by a publisher. Examples: UbuntuServer, WindowsServer.
-  - SKU. An instance of an offer, such as a major release of a distribution. Examples: 18.04-LTS, 2019-Datacenter.
-- Custom. One of your custom made VM Images. You will need to select options from each of the following dropdowns:
-  - Image Resource Group. A list of Resource Groups associated with your subscription.
-  - [Image Name](https://docs.microsoft.com/en-us/dynamics-nav/how-to--get-the-microsoft-azure-image-name). This is the label that is assigned to the image.
-- [Shared Image](https://docs.microsoft.com/en-us/azure/virtual-machines/shared-image-galleries). Enables you to create an Elastigroup with an image from your organization’s Shared Image Gallery. You will need to select options from each of the following dropdowns:
-  - Image Resource Group. A list of Resource Groups associated with your subscription.
-  - Gallery Name. The list of shared gallery names associated with the selected Resource Group.
-  - Image Name. List of shared images associated with the selected Gallery. See below for more information.
-  - Version. The available versions of the selected Image. These will be versions that are available in your selected region. If you need the most recent version, choose Latest from the list.
+- **[Marketplace](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage)** is an image available in the Azure Marketplace:
+  - **Publisher** is the organization that created the image.
+  - **Offer** is the name of a group of related images created by a publisher, such as <i>UbuntuServer</i>, <i>WindowsServer</i>.
+  - **SKU** is an instance of an offer, such as a major release of a distribution. For exmaple, <i>18.04-LTS</i>, <i>2019-Datacenter</i>.
+- **Custom** VM image:
+  - **Image Resource Group** is a list of Resource Groups associated with your subscription.
+  - **[Image Name](https://docs.microsoft.com/en-us/dynamics-nav/how-to--get-the-microsoft-azure-image-name)** is the label of the image.
+- **[Shared Image](https://docs.microsoft.com/en-us/azure/virtual-machines/shared-image-galleries)** lets you create an Elastigroup with an image from your organization’s shared image gallery:
+  - **Image Resource Group** is a list of resource groups associated with your subscription.
+  - **Gallery Name** is the list of shared gallery names associated with the selected resource group.
+  - **Image Name** is the list of shared images associated with the gallery.
+     <details>
+       <summary markdown="span">See more about image name</summary>
 
-<img src="/elastigroup/_media/gettingstarted-eg-azure-031.png" />
+       All of the image names in the list have the OS that you chose under Operating System and VM Sizes.
 
-#### Image Name
+       Images are <i>Generalized</i> or <i>Specialized</i>. For a specialized image:
+       * You do not specify login information for the image.
+       * Custom data is not available.
 
-All of the image names in the dropdown list have the OS that you chose under Operating System and VM Sizes.
-
-Images are indicated as Generalized or Specialized. When you choose a Specialized image, the following applies:
-
-- You will not specify Login information for the image.
-- Custom Data will not be available.
+   </details>
+   
+  - **Version** is the list of available versions of the selected image in your selected region. If you need the most recent version, select <i>Latest</i>.
 
 ### Network
 
