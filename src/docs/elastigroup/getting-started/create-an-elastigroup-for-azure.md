@@ -191,38 +191,36 @@ Keep in mind:
 
 - **Shutdown Script** requires an agent to be installed on the instance. [Learn more](elastigroup/features/azure/shutdown-script-in-elastigroup-for-azure).
 
+### Scheduling
+
+You can schedule actions using cron expressions (a string consisting of six or seven subexpressions (fields) that describe individual details of the schedule) instead of manual actions:
+
+* **Scale up** virtual machines in the Elastigroup cluster (a specified number of VMs).
+* **Scale down** virtual machines in the Elastigroup cluster (a specified number of VMs).
+* **Automatic deployment** of the Elastigroup. This triggers a blue/green deployment that replaces the existing VMs in the Elastigroup. You specify the <i>batch size</i> and <i>grace period</i>.
+* **Percentage scale up** according to a specified percentage from the Elastigroup’s capacity (and not a specified number of VMs).
+* **Percentage scale down** according to a specified percentage from the Elastigroup’s capacity (and not a specified number of VMs).
+* **Set capacity range**, such as minimum, maximum, target.
+
 ## Step 3: Scaling
 
-Optionally, create scaling policies for your Elastigroup based on Azure Monitor metrics. A policy can be for scale up or scale down.
+You can create scaling policies for your Elastigroup based on Azure Monitor metrics. A policy can be for scaling up or scaling down.
 
-To create a scaling policy, complete the following steps.
-
-1. Click Add Policy.
-2. Set policy name.
-3. Specify a Namespace (default is Microsoft.Compute).
-4. Set scale based on values: Choose Trigger (Metric Name), Behavior.
-5. Set Duration to determine the number of tests (and duration between them) to activate the policy.
-6. Choose the action type:
-   - Adjustment. Will add instances on up scaling and remove on down scaling policies. You need to set the number of instances.
-   - Set the minimum target.
-   - Update Capacity. In terms of Target Minimum and Maximum.
-   - Percentage Adjustment. Add or Remove a percentage of the group active capacity, for Up and Down scaling respectively.
-7. Cool-down.
-   - Wait Period is the time (in seconds) that all scaling activities will be suspended after the scaling policy is triggered.
-
-<img src="/elastigroup/_media/gettingstarted-eg-azure-06.png" />
+1. Click **Add Policy**.
+2. Enter a **Policy Name** and **Namespace** (default is <i>Microsoft.Compute</i>).
+3. Set **scale based on values**: Choose Trigger (Metric Name), Behavior.
+4. Set **Duration** to determine the number of tests (and duration between them) to activate the policy.
+5. Choose the **action type**:
+   - **Adjustment** adds instances for scaling up and removes instances for scaling down policies. You also need to set the number of instances.
+   - Set the **minimum target**.
+   - Update **Capacity**.
+   - **Percentage Adjustment** to add or remove a percentage of the group active capacity, for up and down scaling.
+6. **Cooldown Wait Period** is the time in seconds that all scaling activities are suspended after the scaling policy is triggered.
 
 ## Step 4: Review
 
-1. Review your configuration in JSON format in the Review tab. You can edit the JSON directly by switching on Edit mode.
+1. Review your configuration in the JSON format in the Review tab. You can edit the JSON directly by switching on **Edit mode**.
 
 <img src="/elastigroup/_media/gettingstarted-eg-azure-07.png" />
 
-2. To create the Elastigroup, click Create.
-
-## What's Next?
-
-Learn how to:
-
-- [Import Existing Azure Resources](elastigroup/azure/getting-started/import-an-existing-azure-resource.md) such as a Scale Set, an Application Gateway, or a VM.
-- [Clone an Existing Elastigroup](elastigroup/tutorials/azure/clone-an-existing-elastigroup).
+2. To create the Elastigroup, click **Create**.
