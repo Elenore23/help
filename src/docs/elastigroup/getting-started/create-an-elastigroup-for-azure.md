@@ -14,7 +14,7 @@ Before you start, [connect your Azure account to Spot](connect-your-cloud-provid
    <details>
      <summary markdown="span">View image</summary>
 
-     <img src="https://github.com/user-attachments/assets/d945cc86-7bdb-47d7-993d-96529f7029f5"/>
+     <img width=60% src="https://github.com/user-attachments/assets/d945cc86-7bdb-47d7-993d-96529f7029f5"/>
 
    </details>
 
