@@ -82,6 +82,7 @@ Choose a type of images:
   - **Image Resource Group** is a list of resource groups associated with your subscription.
   - **Gallery Name** is the list of shared gallery names associated with the selected resource group.
   - **Image Name** is the list of shared images associated with the gallery.
+    
      <details>
        <summary markdown="span">See more about image name</summary>
 
@@ -97,56 +98,98 @@ Choose a type of images:
 
 ### Network
 
-Enter the information for your network interface. You can define additional network interfaces as needed.
+- **Vnet Resource Group** you want your Elastigroup scale sets to be a part of.
+- **Virtual Network** (VN) for your Elastigroup.
+- Network Interface:
+  - **Set as Primary** makes this the main network interface attached to the VM.
+  - **Subnet ID** is the specific subnet inside your VN.
+  - **Network Resource Group** is  where the network interface will be created.
+  - **Network Security Group** to associate with the VM.
+  - **Application Security Group** provides security micro-segmentation virtual networks in Azure and lets you define network security policies based on workloads (such as applications) instead of explicit IP addresses.
+    The application security groups depend on the virtual network that you choose and may be different in each network.
+  - **Assign Public IP** if you want VMs in this Elastigroup to launch with a public IP. The list of static public IPs only includes IPs from availability zones that you set for the Elastigroup.
 
-- Vnet Resource Group. Select the Vnet Resource group you want your Elastigroup Scale Sets to be a part of.
-- Virtual Network. Select the specific Virtual Network (VN) for your Elastigroup.
-- Set as Primary. The main network interface attached to the VM.
-- Subnet ID. Select the specific Subnet inside your VN.
-- Resource Group. The resource group where the network interface will be created.
-- Network Security Group. The network security group to associate with the VM.
+     <details>
+       <summary markdown="span">See more about public IPs</summary>
 
-<img src="/elastigroup/_media/gettingstarted-eg-azure-03b.png" width="514" height="301" />
+      You can minimize the number of new IPs created ad hoc on VM launchers:
+      * Choose IPs that are <i>no zone</i> or <i>zone redundant</i>. These give the most availability zone flexibility.
+      * The ideal number of public IPs for the pool is twice your maximum capacity. For example, if your maximum capacity is 6 VMs, then choose at least 12 public IP addresses.
+      * If you choose zonal IPs (for example, in zones 1, 2, 3), distribute them equally across the zones.
 
-- Application Security Group: Provides security micro-segmentation virtual networks in Azure and enables you to define network security policies based on workloads (i.e., applications) instead of explicit IP addresses. Choose one or more application security groups the Elastigroup should belong to.
-
-  <img src="/elastigroup/_media/gettingstarted-eg-azure-03c.png" width="331" height="171" />
-
-  Note that the items appearing in the list of application security groups depend on the Virtual Network that you choose and may be different in each network.
-
-- Assign Public IP. Mark this checkbox if you want VMs in this Elastigroup to launch with a Public IP. You will then need to choose one or more Static Public IPs from the dropdown list. The list will include IPs only from AZs that you have chosen for the Elastigroup.
-
-<img src="/elastigroup/_media/gettingstarted-eg-azure-03d.png" width="273" height="362" />
-
-#### More on Choosing Public IPs
-
-In order to minimize ad hoc creation of new IPs on VM launchers, the following is recommended:
-
-- Choose IPs that are indicated as No zone/Zone redundant. These will ensure the most AZ flexibility.
-- The optimal number of public IPs for the pool is twice your maximum capacity. For example, if your maximum capacity is 6 VMs, then choose at least 12 public IP addresses.
-- If you choose zonal IPs (e.g., in zones 1, 2, 3), then distribute them equally across the zones.
+   </details>
 
 ### Login
 
-- User Name. Specify the user name you wish to SSH the VM's with.
-- Windows Password. The password you use for your Windows login.
+- **User Name**.
+- **Authentication type**  can be <i>SSH public key</i> or <i>password</i> (the password you use to sign in to Linux or Windows).
 
-> **Tip**: When a Specialized Shared [Image](elastigroup/getting-started/create-an-elastigroup-for-azure?id=image) is specified, you do not need to specify login information.
-
-### Additional Configuration (optional)
-
-- Managed Identity. Select the Managed Identity for your VMSS instances.
-- Tags. Add tag keys and values you want associated with the Elastigroup VMs.
-- Custom Data. Custom data is useful for launching VMs with all required configurations and software installations. Elastigroup can load custom user data (i.e., custom scripts) during the provisioning of VMs. When a Specialized Shared Image is specified, Custom Data is not available.
-- Shutdown Script. You can configure a shutdown script, but this requires an agent to be installed on the instance. [Learn more](elastigroup/features/azure/shutdown-script-in-elastigroup-for-azure).
-
-<img src="/elastigroup/_media/gettingstarted-eg-azure-05.png" />
+When a specialized shared [Image](elastigroup/getting-started/create-an-elastigroup-for-azure?id=image) is used, you do not need to give login information.
 
 ### Load Balancers (optional)
 
 You can add a load balancer. Elastigroup will automatically register new VMs to the configured load balancer.
+Keep in mind:
+* You can have up to one private and one public standard load balancer.
+* Standard load balancers are not available if you assign a basic public IP to your network interface or if basic VM sizes are selected.
 
-<img src="/elastigroup/_media/gettingstarted-eg-azure-03aa.png" />
+### Health Checks (optional)
+
+* **Health check types**:
+  * **VM state** checks the VM’s current status in Azure.
+  * **Application gateway** tests the connection from the application gateway to the VM. It’s available if at least one application gateway is defined in the Elastigroup. You also select the health check grace period in seconds, which is the time to allow a VM to boot and applications to fully start before the first health check.
+* **Auto healing** checks the VM health according to the health check types and replaces unhealthy VMs.
+  
+### Additional Configuration (optional)
+
+- **Managed Identity** for your VMSS instances.
+- **Tags** let you add tag keys and values for the Elastigroup VMs.
+- **Custom Data** is a script that will run during every VM startup. It's useful for launching VMs with all the preset configurations and software installations. Elastigroup can load custom user data (such as custom scripts) when provisioning VMs. Custom data is not available for specialized shared images.
+    Make sure your script doesn't require additional [extensions](https://docs.spot.io/managed-instance/azure/tutorials/extensions). For example, you may need to add an extension for custom data to work.
+  
+   <details>
+     <summary markdown="span">Extension for custom data</summary>
+
+    Add the `customDataRunner` extension:
+
+    1. Go to **group** > **compute** > **launchSpecification** > **extensions**.
+    2. Add this extension:
+       <pre><code>
+       "extensions": [
+              {
+                "name": "customDataRunner",
+                "type": "CustomScriptExtension",
+                "publisher": "Microsoft.Compute",
+                "apiVersion": "1.10",
+                "minorVersionAutoUpgrade": true,
+                "publicSettings": {
+                  "commandToExecute": "copy C:\\AzureData\\CustomData.bin C:\\AzureData\\CustomData.ps1 & powershell -ExecutionPolicy Unrestricted -File C:\\AzureData\\customData.ps1"
+                }
+              }
+            ]
+       </code></pre>
+    
+   </details>
+  
+   <details>
+     <summary markdown="span">See more about custom data and user data</summary>
+
+    <b>User data</b>
+
+    <a href="https://learn.microsoft.com/en-us/azure/virtual-machines/user-data">User data</a> is a set of scripts or other metadata inserted into an Azure virtual machine during provisioning. After provision, any application on the virtual machine can access the user data from the Azure Instance Metadata Service (IMDS).
+
+    <b>Custom data</b>
+
+    <a href="https://learn.microsoft.com/en-us/azure/virtual-machines/custom-data">Custom data</a> is made available to the VM during provisioning.
+
+    <b>What’s the difference between the two?</b>
+
+    The main difference is that user data is available when OS persistence is on, and custom data is not.
+    
+   </details>
+
+
+- **Shutdown Script** requires an agent to be installed on the instance. [Learn more](elastigroup/features/azure/shutdown-script-in-elastigroup-for-azure).
 
 ## Step 3: Scaling
 
